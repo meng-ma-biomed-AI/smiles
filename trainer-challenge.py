@@ -4,7 +4,7 @@
 import time, argparse, gc, os
 
 import numpy as np
-import cupy as cp
+# import cupy as cp
 import pandas as pd
 
 from rdkit import Chem
@@ -94,13 +94,13 @@ def main():
     Mf.random_list(F_list)
     Mf.random_list(T_list)
     
-    data_t = xp.asarray(T_list, dtype=cp.int32).reshape(-1,args.n_out)
-    data_f = xp.asarray(F_list, dtype=cp.float32).reshape(-1,args.n_out,args.atomsize,lensize)
+    data_t = xp.asarray(T_list, dtype=xp.int32).reshape(-1,args.n_out)
+    data_f = xp.asarray(F_list, dtype=xp.float32).reshape(-1,args.n_out,args.atomsize,lensize)
     print(data_t.shape, data_f.shape)
     train_dataset = datasets.TupleDataset(data_f, data_t)
     
     print('Making Scoring Dataset...')
-    ile=args.input + '/' + args.protein + '_score.smiles'
+    file=args.input + '/' + args.protein + '_score.smiles'
     print('Loading smiles: ', file)
     smi = Chem.SmilesMolSupplier(file,delimiter='\t',titleLine=False)
     mols = [mol for mol in smi if mol is not None]
@@ -113,8 +113,8 @@ def main():
             T_list.append(mol.GetProp('_Name'))            
     Mf.random_list(F_list)
     Mf.random_list(T_list)
-    data_t = xp.asarray(T_list, dtype=cp.int32).reshape(-1,1)
-    data_f = xp.asarray(F_list, dtype=cp.float32).reshape(-1,1,args.atomsize,lensize)
+    data_t = xp.asarray(T_list, dtype=xp.int32).reshape(-1,1)
+    data_f = xp.asarray(F_list, dtype=xp.float32).reshape(-1,1,args.atomsize,lensize)
     print(data_t.shape, data_f.shape)
     test_dataset = datasets.TupleDataset(data_f, data_t)
     

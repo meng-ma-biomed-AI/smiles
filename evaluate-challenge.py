@@ -5,7 +5,7 @@ import argparse
 import gc
 
 import numpy as np
-import cupy as cp
+# import cupy as cp
 import pandas as pd
 
 from rdkit import Chem
@@ -79,9 +79,9 @@ def main():
     print(data_t.shape, data_f.shape)
     borders = [len(data_t) * i // 30 for i in range(30+1)]
     
-    with cp.cuda.Device(args.gpu):
-        data_f_gpu = cp.array(data_f)
-        data_t_gpu = cp.array(data_t)
+#     with cp.cuda.Device(args.gpu):
+#         data_f_gpu = cp.array(data_f)
+#         data_t_gpu = cp.array(data_t)
 
     #-------------------------------
     # reset memory
@@ -107,17 +107,17 @@ def main():
             
         pred_score,loss =[],[]
         
-        with cp.cuda.Device(args.gpu):
-            serializers.load_npz(args.model+'/'+args.protein+'/model_snapshot_' + str(epoch), model)
+#         with cp.cuda.Device(args.gpu):
+#             serializers.load_npz(args.model+'/'+args.protein+'/model_snapshot_' + str(epoch), model)
             
         for i in range(30):
-            with cp.cuda.Device(args.gpu):
-                x_gpu = data_f_gpu[borders[i]:borders[i+1]]
-                y_gpu = data_t_gpu[borders[i]:borders[i+1]]
-                pred_tmp_gpu, sr = model.predict(Variable(x_gpu))
-                pred_tmp_gpu = F.sigmoid(pred_tmp_gpu)
-                pred_tmp = pred_tmp_gpu.data.get()
-                loss_tmp = model(Variable(x_gpu),Variable(y_gpu)).data.get()
+#             with cp.cuda.Device(args.gpu):
+#                 x_gpu = data_f_gpu[borders[i]:borders[i+1]]
+#                 y_gpu = data_t_gpu[borders[i]:borders[i+1]]
+#                 pred_tmp_gpu, sr = model.predict(Variable(x_gpu))
+#                 pred_tmp_gpu = F.sigmoid(pred_tmp_gpu)
+#                 pred_tmp = pred_tmp_gpu.data.get()
+#                 loss_tmp = model(Variable(x_gpu),Variable(y_gpu)).data.get()
             pred_score.extend(pred_tmp.reshape(-1).tolist())
             loss.append(loss_tmp.tolist())
         

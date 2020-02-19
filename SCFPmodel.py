@@ -8,7 +8,7 @@ from chainer import Link, Chain, ChainList, training
 #from chainer.training import extensions
 
 import numpy as np
-import cupy as cp
+# import cupy as cp
 
 import SCFPfunctions as Mf
 
@@ -54,12 +54,12 @@ class CNN(chainer.Chain):
         h = F.average_pooling_2d(h, (self.k4,1), stride=self.s4, pad=(self.k4//2,0)) # 2nd pooling
         h = F.max_pooling_2d(h, (self.l4,1)) # grobal max pooling, fingerprint
         h = self.fc3(h) # fully connected
-        sr = 0.00001* cp.mean(cp.log(1 + h.data * h.data)) # sparse regularization
+        sr = 0.00001* np.mean(np.log(1 + h.data * h.data)) # sparse regularization
         h = F.leaky_relu(self.bn3(h))
         return self.fc4(h), sr
 
     def fingerprint(self,x):
-        x = Variable(x.astype(cp.float32).reshape(-1,1, self.atomsize, self.lensize))
+        x = Variable(x.astype(np.float32).reshape(-1,1, self.atomsize, self.lensize))
         h = F.leaky_relu(self.bn1(self.conv1(x))) # 1st conv
         h = F.average_pooling_2d(h, (self.k2,1), stride=self.s2, pad=(self.k2//2,0)) # 1st pooling
         h = F.leaky_relu(self.bn2(self.conv2(h))) # 2nd conv
@@ -68,25 +68,25 @@ class CNN(chainer.Chain):
         return h.data
     
     def layer1(self,x):
-        x = Variable(x.astype(cp.float32).reshape(-1,1, self.atomsize, self.lensize))
+        x = Variable(x.astype(np.float32).reshape(-1,1, self.atomsize, self.lensize))
         h = self.bn1(self.conv1(x)) # 1st conv
         return h.data
     
     def pool1(self,x):
-        x = Variable(x.astype(cp.float32).reshape(-1,1, self.atomsize, self.lensize))
+        x = Variable(x.astype(np.float32).reshape(-1,1, self.atomsize, self.lensize))
         h = F.leaky_relu(self.bn1(self.conv1(x))) # 1st conv
         h = F.average_pooling_2d(h, (self.k2,1), stride=self.s2, pad=(self.k2//2,0)) # 1st pooling
         return h.data
     
     def layer2(self,x):
-        x = Variable(x.astype(cp.float32).reshape(-1,1, self.atomsize, self.lensize))
+        x = Variable(x.astype(np.float32).reshape(-1,1, self.atomsize, self.lensize))
         h = F.leaky_relu(self.bn1(self.conv1(x))) # 1st conv
         h = F.average_pooling_2d(h, (self.k2,1), stride=self.s2, pad=(self.k2//2,0)) # 1st pooling
         h = self.bn2(self.conv2(h)) # 2nd conv
         return h.data
     
     def pool2(self,x):
-        x = Variable(x.astype(cp.float32).reshape(-1,1, self.atomsize, self.lensize))
+        x = Variable(x.astype(np.float32).reshape(-1,1, self.atomsize, self.lensize))
         h = F.leaky_relu(self.bn1(self.conv1(x))) # 1st conv
         h = F.average_pooling_2d(h, (self.k2,1), stride=self.s2, pad=(self.k2//2,0)) # 1st pooling
         h = F.leaky_relu(self.bn2(self.conv2(h))) # 2nd conv
